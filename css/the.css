@@ -1,3 +1,7 @@
-section.main, section.create_noauth {
+section.main, section.create, section.create_noauth {
   display: none;
+}
+
+textarea {
+    width: 400px;
 }

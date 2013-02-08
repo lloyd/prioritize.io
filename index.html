@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>prioritize.io</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./css/strip.css" type="text/css">
     <link rel="stylesheet" href="./css/strip-responsive.css" type="text/css">
     <link rel="stylesheet" href="./css/the.css" type="text/css">
-   	<link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,700,600" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,700,600" rel="stylesheet">
     <link href='http://fonts.googleapis.com/css?family=Merriweather:400,700' rel='stylesheet' type='text/css'>
 
 </head><body>
@@ -39,15 +39,15 @@
         </header>
     </div>
     <div class="row">
-   		<div class="offset3 span6">
-        	<hr class="shadow-line"/>
+        <div class="offset3 span6">
+            <hr class="shadow-line"/>
         </div>
     </div>
 </section>
 
 <section class="main section-box shadow">
 <div class="container">
-	<h3 class="subhead">How does <strong>prioritize.io</strong> work?</h3>
+    <h3 class="subhead">How does <strong>prioritize.io</strong> work?</h3>
 </div>
     <div class="container">
         <div class="row">
@@ -71,7 +71,7 @@
             </article>
             <article class="span4 center-align">
 
-            	<img src="http://placehold.it/200x131" alt="heartwork" />
+                <img src="http://placehold.it/200x131" alt="heartwork" />
                 <h3>3. Agree, then <strong>Execute</strong>.</h3>
                 <p>
                   Armed with an understanding of what your group
@@ -80,7 +80,7 @@
                   Get out 30 minutes later and <strong>Execute</strong>.
                 </p>
             </article>
-   		</div>
+        </div>
     </div>
 </section>
 
@@ -88,7 +88,7 @@
     <div class="row">
         <header class="highlight span12">
             <h2>Create a Survey.</h2>
-            <p><a href="#" class="big-btn signin">Sign In to Get Started</a></p>
+            <p><a href="#" class="big-btn signin">Sign In With Your Email</a></p>
         </header>
     </div>
 </section>
@@ -98,9 +98,9 @@
         <header class="highlight span12">
             <h2>Create a Survey.</h2>
         </header>
-     		<div class="offset3 span6">
+        <div class="offset3 span6">
             <form>
-              <div> <strong>survey title</strong> <input type="text"></input> </div>
+              <div> <strong>survey title</strong> <input class="title" type="text"></input> </div>
               <br/>
               <div class="items">
               </div>
@@ -109,20 +109,47 @@
                 <p><strong> Add a new item to the survey </trong></p>
                 <textarea maxlength="140" rows="3" cols="50"></textarea>
               </div>
-              <button class="btn btn-large">add item</button>
+              <button class="add-item btn btn-large">add item</button>
             </form>
             <br/>
-            <a class="big-btn" href="#">Complete Survey</a></li>
+            <a class="complete_survey big-btn" href="#">Complete Survey</a></li>
         </div>
     </div>
 </section>
 
+<section class="create_success container">
+    <div class="row">
+        <header class="highlight span12">
+            <h2>You Did It!</h2>
+        </header>
+        <div class="offset3 span6">
+          <p>You just created your first survey.  Share this url:</p>
+          <div class="well">
+            <a href="" class="survey_url"></a>
+          </div>
+        </div>
+    </div>
+</section>
+
+<section class="survey_noauth container">
+    <div class="row">
+        <header class="highlight span12">
+            <h2>Weigh in</h2>
+        </header>
+        <p>To view this survey:</p>
+        <p><a href="#" class="big-btn signin">Sign In With Your Email</a></p>
+    </div>
+</section>
 
 <footer class="container footer-box">
     <p>A little hack, by<a href="http://lloyd.io">lloyd</a></p>
 </footer>
+<script src="https://login.persona.org/include.js"></script>
+<script src="https://cdn.firebase.com/v0/firebase.js"></script>
+<script src="https://cdn.firebase.com/v0/firebase-auth-client.js"></script>
 <script src="./js/jquery-1.8.0.min.js"></script>
 <script src="./js/bootstrap.js"></script>
+<script src="./js/director.min.js"></script>
 <script src="./js/the.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-section.main, section.create, section.create_noauth {
+section.main, section.create, section.create_noauth, section.create_success, section.survey_noauth, survey.take_survey {
   display: none;
 }
 

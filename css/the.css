@@ -1,7 +1,22 @@
-section.main, section.create, section.create_noauth, section.create_success, section.survey_noauth, survey.take_survey {
+section.main, section.create, section.create_noauth, section.create_success, section.survey_noauth, section.take_survey, section.view_survey {
   display: none;
 }
 
 textarea {
     width: 400px;
+}
+
+.take_survey .first, .take_survey .second {
+    text-align: center;
+    background-color: #ddd;
+    padding: 2em;
+}
+
+.take_survey .first:hover, .take_survey .second:hover {
+    background-color: #ccc;
+    pointer: cursor;
+}
+
+footer {
+    margin-top: 5em;
 }

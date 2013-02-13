@@ -47,8 +47,24 @@ function tsort(E, num) {
 
 // returns null if the edges result in a fully unique sorting, otherwise returns a
 // pair of entries that we would like the answer to.
-function nextQuestion(E, num) {
+function nextQuestion(E, num, maxRelevant) {
+  // if a maximum rank that is relevant was not specified, then
+  // we'll set maxRelevant to a large number so we consider all
+  // items relevant and seek a total ordering (lots of questions)
+  if (!maxRelevant) maxRelevant = 77777;
+
   var sorted = tsort(E, num);
+
+  // find the maximum rank an item can have given the current edge set
+  // (useful to determine wether it's relevant and we should ask more
+  // questions about it)
+  function minRank(E, num) {
+    var lengths = $.map(E, function(edge) {
+      if (edge[1] === num) return 1 + minRank(E, edge[0]);
+      else return 0;
+    });
+    return lengths.sort()[lengths.length - 1] || 0;
+  }
 
   function hasEdge(n, m) {
     for (var i = 0; i < E.length; i++) {
@@ -60,7 +76,9 @@ function nextQuestion(E, num) {
 
   // each consecutive node in the graph should be conected by an edge
   for (var i = 0; i < sorted.length - 1; i++) {
-    if (!hasEdge(sorted[i], sorted[i+1]))
+    if (!hasEdge(sorted[i], sorted[i+1]) &&
+        minRank(E, sorted[i]) < maxRelevant &&
+        minRank(E, sorted[i + 1]) < maxRelevant)
       return [sorted[i], sorted[i+1]];
   }
 

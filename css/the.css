@@ -1,4 +1,5 @@
-section.main, section.create, section.create_noauth, section.create_success, section.survey_noauth, section.take_survey, section.view_survey {
+section.main, section.create, section.create_noauth, section.create_success,
+section.survey_noauth, section.take_survey, section.view_survey, section.survey_notfound {
   display: none;
 }
 
@@ -19,4 +20,8 @@ textarea {
 
 footer {
     margin-top: 5em;
+}
+
+a.btn-primary {
+    color: #fff;
 }

@@ -1,16 +1,16 @@
-body {	
+body {
     padding: 30px 0 0;
     border-top: 3px solid #D84A38;
-    background:#efefef; 
-	background-image: url("../img/bg.png");	
+    background:#efefef;
+	background-image: url("../img/bg.png");
 }
 
 p {
-	font: 14px/23px 'Open Sans', sans-serif;	
-    text-shadow: #ffffff 0 1px 0;	
+	font: 14px/23px 'Open Sans', sans-serif;
+    text-shadow: #ffffff 0 1px 0;
 }
 
-a:link, 
+a:link,
 a:visited {
     color: #338bb8;
     text-decoration:none;
@@ -18,7 +18,7 @@ a:visited {
 
 a:hover {
     color: #3799ca;
-    text-decoration:underline;    
+    text-decoration:underline;
 }
 
 .center-align {

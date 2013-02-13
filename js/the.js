@@ -13,6 +13,12 @@ function randomSurveyID() {
   return str;
 };
 
+// for longer surveys, ignore all but the top MAX_RELEVANT choices
+// This means ask fewer questions about the unimportant stuff, and
+// ignore relative ordering of stuff that's not in the top 5
+// (psychological magic!  it's awesome!).
+var MAX_RELEVANT = 5;
+
 $(document).ready(function() {
   // when get started is clicked
   $(".get_started").click(function(e) {
@@ -73,12 +79,15 @@ $(document).ready(function() {
   if (!document.location.hash) document.location.hash = "#/";
 });
 
-function renderSurvey(id) {
+function getSurvey(id, cb) {
   var r = firebase.child("surveys").child(id);
-  r.on('value', function(snapshot) {
-    var survey = snapshot.val();
-    console.log(survey);
+  r.once('value', function(snapshot) {
+    cb(snapshot.val());
+  });
+}
 
+function renderSurvey(id) {
+  getSurvey(id, function(survey) {
     $("section.take_survey").fadeIn(700);
     var EDGES = [];
 
@@ -97,12 +106,11 @@ function renderSurvey(id) {
     }
 
     function chosen() {
-      console.log(EDGES);
-      var q = nextQuestion(EDGES, survey.questions.length);
-      console.log(q);
+      var q = nextQuestion(EDGES, survey.questions.length, MAX_RELEVANT);
       if (!q) {
         // now we know the preferences of this user!
         var results = tsort(EDGES, survey.questions.length);
+        alert("fuckme");
         firebase.child("responses").child(id).child(currentUser.id).set(results);
         document.location.hash = "#/view/" + id;
       }
@@ -113,21 +121,116 @@ function renderSurvey(id) {
   });
 }
 
+function analyze(survey, responses, limit) {
+  var ranking = [];
+
+  // build up the ranking list
+  $.each(survey.questions, function(num, q) {
+    ranking.push({
+      // summed score
+      score: 0,
+      // question text
+      question: q,
+      // actual scores
+      scores: [],
+      // highest vote and caster of said vote
+      advocate: null,
+      // lowest vote and caster of said vote
+      detractor: null
+    });
+  });
+
+  // now iterate through each response
+  $.each(responses, function(k, v) {
+    // respect limit
+    if (limit && !$.inArray(k, limit)) return;
+
+    // assign scores
+    for (var i = 0; i < survey.questions.length; i++) {
+      var score = i < MAX_RELEVANT ? MAX_RELEVANT - i : 0;
+      var item = v[i];
+
+      ranking[item].score += score;
+
+      ranking[item].scores.push(score);
+
+      if ((!ranking[item].advocate || score > ranking[item].advocate.score) &&
+          score > (MAX_RELEVANT / 2)) {
+
+        ranking[item].advocate = {
+          who: k,
+          score: score
+        };
+      }
+
+      if ((!ranking[item].detractor || score < ranking[item].detractor.score) &&
+         score < (MAX_RELEVANT / 2)) {
+        ranking[item].detractor = {
+          who: k,
+          score: score
+        };
+      }
+    }
+  });
+
+  // massage that data!  items that have less than a point per surveyee have no detractor,
+  // noone cares.
+  var numRespondees = $.grep(Object.keys(responses), function(x) {
+    return !limit || $.inArray(x, limit);
+  }).length;
+  $.each(ranking, function(k, r) {
+    if ((r.score / numRespondees) <= 1 ) r.detractor = null;
+  });
+
+  ranking = ranking.sort(function(a, b) {
+    return a.score < b.score ? 1 : -1;
+  });
+
+  return ranking;
+}
+
+function getImg(id) {
+  var url = 'http://www.gravatar.com/avatar/';
+  url += CryptoJS.MD5(id.replace(/,/g, '.'));
+  url += '?s=48';
+  var name = id.replace(/@.*$/, '@');
+  return $("<img/>").attr('src', url).attr('title', name).attr('alt', name);
+}
+
 function renderResponses(id) {
-  console.log(id);
   var r = firebase.child("surveys").child(id);
-  r.on('value', function(snapshot) {
+  r.once('value', function(snapshot) {
     var survey = snapshot.val();
     r.off();
-    console.log(survey);
     $("section.view_survey .surveyName").text(survey.title);
     $("section.view_survey").fadeIn(700);
+
+    // now!  let's pull all the responses
+    var r2 = firebase.child("responses").child(id);
+    r2.on('value', function(sshot) {
+      // this can be called multiple times, it's got realtime update.  freaking neat, eh?
+      // let's first clear old data -
+      $("section.view_survey tbody.ranking").empty();
+
+      var r = analyze(survey, sshot.val());
+
+      var i = 1;
+      $.each(r, function(k, x) {
+        $("<tr/>")
+          .append($("<td/>").text(i++))
+          .append($("<td/>").text(x.question))
+          .append($("<td/>").text(x.score))
+          .append($("<td/>").append(x.advocate ? getImg(x.advocate.who) : $("<span/>")))
+          .append($("<td/>").append(x.detractor ? getImg(x.detractor.who) : $("<span/>")))
+          .appendTo($("section.view_survey tbody.ranking"));
+      });
+    });
   });
 }
 
 function userHasTakenSurvey(surveyId, cb) {
   var r = firebase.child("responses").child(surveyId).child(currentUser.id);
-  r.on('value', function(snapshot) {
+  r.once('value', function(snapshot) {
     cb(snapshot.val());
   });
 }
@@ -146,7 +249,13 @@ var router = Router({
     $("section.create_success").fadeIn(700);
   },
   '/survey/:surveyId': function(surveyId) {
-    $("section.survey_noauth").fadeIn(700);
+    getSurvey(surveyId, function(survey) {
+      if (!survey) $("section.survey_notfound").fadeIn(700);
+      else {
+        $(".surveyTitle").text(survey.title);
+        $("section.survey_noauth").fadeIn(700);
+      }
+    });
   },
   '/take/:surveyId': function(surveyId) {
     // if this user has taken this survey, then we'll send them to view, otherwise to take/
@@ -160,7 +269,6 @@ var router = Router({
       if (!r) document.location.hash = "#/take/" + surveyId;
       else renderResponses(surveyId);
     });
-
   }
 });
 
@@ -176,7 +284,8 @@ router.configure({
       "section.create_success",
       "section.survey_noauth",
       "section.take_survey",
-      "section.view_survey"
+      "section.view_survey",
+      "section.survey_notfound"
     ].join(",")).hide();
 
   },
@@ -205,7 +314,7 @@ var firebaseAuth = new FirebaseAuthClient(firebase, function(error, user) {
     reroute({
       "create": "signin",
       "take": "survey",
-      "view": "take"
+      "view": "survey"
     });
   }
 

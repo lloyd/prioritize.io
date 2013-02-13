@@ -106,7 +106,7 @@
               </div>
               <br/>
               <div class="nextItem">
-                <p><strong> Add a new item to the survey </trong></p>
+                <p><strong> Add a new item to the survey </strong></p>
                 <textarea maxlength="140" rows="3" cols="50"></textarea>
               </div>
               <button class="add-item btn btn-large">add item</button>
@@ -132,17 +132,34 @@
 </section>
 
 <section class="survey_noauth container">
-    <div class="row">
-        <header class="highlight span12">
-            <h2>Weigh in</h2>
-        </header>
-        <p>To view this survey:</p>
-        <p><a href="#" class="big-btn signin">Sign In With Your Email</a></p>
+  <div class="row">
+    <div class="span2">&nbsp;</div>
+    <div class="span8">
+      <h2>Be Heard!</h2>
+      <p>
+        <p>You've been invited to take the survey:</p>
+        <p class="well"><strong class="surveyTitle"></strong></p>
+        <p>To taking this survey, you'll be asked a series of questions.  Afterwards, as a reward,
+        you'll get to see <em>awesome visualizations</em> of what your peers think.
+        So let's do this!</p>
+      </p>
+      <p><a href="#" class="btn btn-primary signin">Sign In With Your Email</a></p>
     </div>
+  </div>
+</section>
+
+<section class="survey_notfound container">
+  <div class="row">
+    <div class="span2">&nbsp;</div>
+    <div class="span8">
+      <div class="alert alert-error">
+        <h4>Oh Shit!</h4>
+        <p>Sorry, this link is broken.  There's no survey here for you to take.  :sad face:.</p>
+    </div>
+  </div>
 </section>
 
 <section class="take_survey container">
-  <center>Now taking survey "<strong class="surveyName">...</strong>"</center>
   <h2>Which is more important?</h2>
   <div class="row">
     <div class="span2">&nbsp;</div>
@@ -153,7 +170,31 @@
 </section>
 
 <section class="view_survey container">
-  <center>Viewing results of survey "<strong class="surveyName">...</strong>"</center>
+  <div class="row">
+    <div class="span2">&nbsp;</div>
+    <div class="span8">
+      <p class="well">Survey results: "<strong class="surveyName">...</strong>"</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="span1">&nbsp;</div>
+    <div class="span10">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+          <th>rank</th>
+          <th>item</th>
+          <th>score</th>
+          <th>advocate</th>
+          <th>detractor</th>
+          </tr>
+        </thead>
+        <tbody class="ranking">
+        </tbody>
+      </table>
+    </div>
+    <div class="span1">&nbsp;</div>
+  </div>
 </section>
 
 
@@ -166,6 +207,7 @@
 <script src="./js/jquery-1.8.0.min.js"></script>
 <script src="./js/bootstrap.js"></script>
 <script src="./js/director.min.js"></script>
+<script src="./js/md5.js"></script>
 <script src="./js/tsort.js"></script>
 <script src="./js/the.js"></script>
 </body>

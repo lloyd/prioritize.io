@@ -110,7 +110,6 @@ function renderSurvey(id) {
       if (!q) {
         // now we know the preferences of this user!
         var results = tsort(EDGES, survey.questions.length);
-        alert("fuckme");
         firebase.child("responses").child(id).child(currentUser.id).set(results);
         document.location.hash = "#/view/" + id;
       }

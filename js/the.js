@@ -197,21 +197,25 @@ function getImg(id) {
 }
 
 function renderResponses(id) {
-  var r = firebase.child("surveys").child(id);
-  r.once('value', function(snapshot) {
-    var survey = snapshot.val();
-    r.off();
+  getSurvey(id, function(survey) {
     $("section.view_survey .surveyName").text(survey.title);
     $("section.view_survey").fadeIn(700);
 
     // now!  let's pull all the responses
     var r2 = firebase.child("responses").child(id);
     r2.on('value', function(sshot) {
+      var responses = sshot.val();
       // this can be called multiple times, it's got realtime update.  freaking neat, eh?
       // let's first clear old data -
       $("section.view_survey tbody.ranking").empty();
+      $("section.view_survey .faces").empty();
 
-      var r = analyze(survey, sshot.val());
+      var r = analyze(survey, responses);
+
+      $("section.view_survey .howMany").text(Object.keys(responses).length);
+      $.each(responses, function(k,v) {
+        $("section.view_survey .faces").append(getImg(k));
+      });
 
       var i = 1;
       $.each(r, function(k, x) {

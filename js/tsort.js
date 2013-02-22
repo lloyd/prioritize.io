@@ -59,7 +59,7 @@ function nextQuestion(E, num, maxRelevant) {
   // (useful to determine wether it's relevant and we should ask more
   // questions about it)
   function minRank(E, num) {
-    var lengths = $.map(E, function(edge) {
+    var lengths = E.map(function(edge) {
       if (edge[1] === num) return 1 + minRank(E, edge[0]);
       else return 0;
     });
@@ -84,3 +84,97 @@ function nextQuestion(E, num, maxRelevant) {
 
   return null;
 }
+
+function allPossibleQuestions(E, num) {
+  // generate all questions
+  var apq = {};
+  for (var i = 0; i < num - 1; i++) {
+    apq[i] = {};
+    for (var j = i+1; j < num; j++) {
+      apq[i][j] = true;
+    }
+  }
+
+  function prune(from, to) {
+    console.log('prune', from, to);
+    // remove this edge
+    if (from > to) delete apq[to][from];
+    else delete apq[from][to];
+
+    // look for derived edges
+    E.forEach(function(e) {
+      if (e[0] == to) {
+        prune(from, e[1]);
+      }
+    });
+  }
+  // prune those that add no information
+  E.forEach(function(e) {
+    prune(e[0], e[1]);
+  });
+
+  // each consecutive node in the graph should be conected by an edge
+  var qs = [];
+  Object.keys(apq).forEach(function(k) {
+    Object.keys(apq[k]).forEach(function(v) {
+      qs.push([k,v]);
+    });
+  });
+
+  return qs;
+}
+
+function findBestQuestion(E, num, depth) {
+  depth = depth || 0;
+  // evaluate all possible moves and pick the one with the best worst case
+  var qs = allPossibleQuestions(E, num);
+
+  if (!qs.length) return [null, depth];
+
+  var costs = [];
+
+  var allqs = [];
+  qs.forEach(function(q) {
+    var cost;
+
+    // may answer A, or may answer B
+    var Ep = E.slice(0);
+    Ep.push(q);
+    cost = allPossibleQuestions(Ep, num).length;
+
+    var Ep = E.slice(0);
+    Ep.push([q[1], q[0]]);
+    var cp = allPossibleQuestions(Ep, num).length;
+    if (cp < cost) cost = cp;
+    costs.push([q, cost]);
+  });
+  costs = costs.sort(function(a, b) {
+    return a[1] > b[1];
+  });
+
+  return costs[0];
+}
+
+/*console.log(findBestQuestion(
+  [],
+  5,
+  0
+  ));
+*/
+
+// figure out how many moves it takes with 20 items
+var numQs = 0;
+var ITERS = 50;
+for (var i = 0; i < ITERS; i++) {
+  process.stdout.write(".");
+  var edges = [];
+  var nq;
+  while (nq = findBestQuestion(edges, 10)[0]) {
+//  while (nq = nextQuestion(edges, 20)) {
+    numQs++;
+    if (Math.random() > .5) nq = [nq[1], nq[0]];
+    edges.push(nq);
+  }
+}
+numQs /= ITERS;
+console.log("avg # of qs asked", numQs);

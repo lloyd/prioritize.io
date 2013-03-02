@@ -25,3 +25,35 @@ footer {
 a.btn-primary {
     color: #fff;
 }
+
+td.contention_1 {
+    font-size: 1.05em;
+    color: #100;
+}
+
+td.contention_2 {
+    font-size: 1.1em;
+    color: #200;
+}
+
+td.contention_3 {
+    font-size: 1.2em;
+    color: #400;
+}
+
+td.contention_4 {
+    font-size: 1.5em;
+    color: #800;
+}
+
+td.contention_5 {
+    font-size: 2em;
+    font-style: bold;
+    color: #f00;
+}
+
+img.face  {
+    height: 48px;
+    width: 48px;
+    border: 0;
+}

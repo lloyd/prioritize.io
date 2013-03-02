@@ -133,7 +133,9 @@ function analyze(survey, responses, limit) {
       // actual scores
       scores: [],
       // highest vote and caster of said vote
-      advocate: null
+      advocate: null,
+      // a score on how contentious this issue is
+      contention: 0
     });
   });
 
@@ -162,13 +164,23 @@ function analyze(survey, responses, limit) {
     }
   });
 
-  var numRespondees = $.grep(Object.keys(responses), function(x) {
-    return !limit || $.inArray(x, limit);
-  }).length;
-
   ranking = ranking.sort(function(a, b) {
     return a.score < b.score ? 1 : -1;
   });
+
+  // now determine contention score given variance
+  for (var i = 0; i < ranking.length; i++) {
+    var scores = ranking[i].scores;
+    var mean = ranking[i].score / scores.length;
+    var v = 0;
+    for (var j = 0; j < scores.length; j++) {
+      var delta = scores[j] - mean;
+      ranking[i].contention += delta * delta;
+    }
+
+    ranking[i].contention = Math.sqrt(ranking[i].contention / scores.length);
+    ranking[i].contention = (ranking[i].contention * 50).toFixed(0);
+  }
 
   return ranking;
 }
@@ -178,7 +190,7 @@ function getImg(id) {
   url += CryptoJS.MD5(id.replace(/,/g, '.'));
   url += '?s=48';
   var name = id.replace(/@.*$/, '@');
-  return $("<img/>").attr('src', url).attr('title', name).attr('alt', name);
+  return $("<img/>").attr('src', url).attr('title', name).attr('alt', name).addClass('face');
 }
 
 function renderResponses(id) {
@@ -208,11 +220,17 @@ function renderResponses(id) {
 
       var i = 1;
       $.each(r, function(k, x) {
+        // based on contention score let's colorize the contention node
+        var cNode = $("<td/>").text(x.contention);
+        var level = "contention_" + (x.contention / 20.0).toFixed(0);
+        cNode.addClass(level);
+
         $("<tr/>")
           .append($("<td/>").text(i++))
           .append($("<td/>").text(x.question))
           .append($("<td/>").text(x.score))
           .append($("<td/>").append(x.advocate ? getImg(x.advocate.who) : $("<span/>")))
+          .append(cNode)
           .appendTo($("section.view_survey tbody.ranking"));
       });
     });

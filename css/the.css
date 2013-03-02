@@ -1,5 +1,6 @@
 section.main, section.create, section.create_noauth, section.create_success,
-section.survey_noauth, section.take_survey, section.view_survey, section.survey_notfound {
+section.survey_noauth, section.take_survey, section.view_survey,
+section.survey_notfound, section.contention {
   display: none;
 }
 
@@ -24,6 +25,10 @@ footer {
 
 a.btn-primary {
     color: #fff;
+}
+
+td.contention:hover {
+    cursor: pointer;
 }
 
 td.contention_1 {
@@ -67,4 +72,49 @@ img.face:hover {
 
 .faces.limiting img.include {
     opacity: 1;
+}
+
+section.contention {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    top: 0;
+    left: 0;
+    margin: 0;
+}
+
+section.contention div.opaque {
+    position: fixed;
+    opacity: .5;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    background-color: #000;
+    z-index: -1;
+}
+
+section.contention div.well {
+    postion: fixed;
+    margin: 10% auto;
+    width: 800px;
+    height: 400px;
+    background-color: #fff;
+}
+section.contention div.well div.contention_view {
+    position: relative;
+    height: 77%;
+    margin-top: 3%;
+}
+
+div.contention_view > div {
+    height: 100%;
+    width: 16.5%;
+    float: left;
+    text-align: center;
+    border-left: 1px solid grey;
+}
+
+div.contention_view > div:last-child {
+    border-right: 1px solid grey;
 }

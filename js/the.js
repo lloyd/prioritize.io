@@ -133,9 +133,7 @@ function analyze(survey, responses, limit) {
       // actual scores
       scores: [],
       // highest vote and caster of said vote
-      advocate: null,
-      // lowest vote and caster of said vote
-      detractor: null
+      advocate: null
     });
   });
 
@@ -161,25 +159,12 @@ function analyze(survey, responses, limit) {
           score: score
         };
       }
-
-      if ((!ranking[item].detractor || score < ranking[item].detractor.score) &&
-         score < (MAX_RELEVANT / 2)) {
-        ranking[item].detractor = {
-          who: k,
-          score: score
-        };
-      }
     }
   });
 
-  // massage that data!  items that have less than a point per surveyee have no detractor,
-  // noone cares.
   var numRespondees = $.grep(Object.keys(responses), function(x) {
     return !limit || $.inArray(x, limit);
   }).length;
-  $.each(ranking, function(k, r) {
-    if ((r.score / numRespondees) <= 1 ) r.detractor = null;
-  });
 
   ranking = ranking.sort(function(a, b) {
     return a.score < b.score ? 1 : -1;
@@ -228,7 +213,6 @@ function renderResponses(id) {
           .append($("<td/>").text(x.question))
           .append($("<td/>").text(x.score))
           .append($("<td/>").append(x.advocate ? getImg(x.advocate.who) : $("<span/>")))
-          .append($("<td/>").append(x.detractor ? getImg(x.detractor.who) : $("<span/>")))
           .appendTo($("section.view_survey tbody.ranking"));
       });
     });

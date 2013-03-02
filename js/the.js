@@ -1,8 +1,10 @@
 var currentState = null;
 var currentUser = null;
 
+/*
 var firebaseURL = 'https://prioritizeio.firebaseio.com';
 var firebase = new Firebase(firebaseURL);
+*/
 
 function randomSurveyID() {
   var str = "";
@@ -141,6 +143,8 @@ function analyze(survey, responses, limit) {
 
   // now iterate through each response
   $.each(responses, function(k, v) {
+    console.log("considering", k);
+
     // respect limit
     if (limit && $.inArray(k, limit) === -1) return;
 
@@ -195,14 +199,44 @@ function getImg(id) {
 }
 
 function renderResponses(id) {
-  getSurvey(id, function(survey) {
+  var survey = {
+    title: "local shit",
+    questions: [
+      "BIGTENT. Get it QA'd and deployed in production",
+      "B2G MERGE. Bring one feature from the B2G branch into mainline Persona",
+      "PERFORMANCE. Improve page load times",
+      "KPI. Get it into production",
+      "CASE SENSITIVITY. Fix it once and for all",
+      "SSO. Fix double logins for Firebase and OpenBadges. Requested by the Born This Way Foundation",
+      "AWS MIGRATION. Get us into the cloud (and out of SCL2) by the end of Q1. I think our lease at SCL2 plays a role in this",
+      "BUG SQUASHING. It's hard to focus and prioritize with nearly 400 open bugs. Spend some time paying down the technical debt",
+      "DOC REVIEW. Make sure our docs and examples are up-to-date and polished for Beta 2. The IdP API and much of the spec are fully undocumented",
+      "BIZDEV. Pick two or three high value adoption opportunities and relentlessly pursue them",
+      "REMEMBER ME. Find a way to sync my email/site associations across browsers so Persona more reliably remembers who I want to be on a site",
+      "HIGH AVAILABILITY. We have a single point of failure with MySQL. Identify and assess ways to eliminate that risk",
+      "BETTER IDP API. The current IdP API is a bit nasty. Clean it up before Beta 2 rolls out the",
+      "BETTER OBSERVER API. The whole watch / loggedInUser business confuses many people. Refine the Observer API to avoid common pitfalls",
+      "INVISIBLE REDIRECTS. After verification, redirect the user to the site immediately, without showing Persona in between",
+      "BETA 2. Plan the release. Get press lined up. This is a Q1 goal",
+      "LOGOUT. It doesn't work how people expect it to work. Find a way to fix that so it's not surprising"
+    ]
+  };
+  setTimeout(function() {
+
+//  getSurvey(id, function(survey) {
     $("section.view_survey .surveyName").text(survey.title);
     $("section.view_survey").fadeIn(700);
 
     // now!  let's pull all the responses
+    var responses = {"ckarlof@mozilla,com":[0,10,3,4,2,12,14,9,6,8,16,7,1,5,15,13,11],"dcallahan@mozilla,com":[0,15,8,7,6,1,5,13,12,9,4,3,16,2,10,14,11],"francois@mozilla,com":[6,0,5,16,9,14,15,1,3,8,4,7,11,2,13,12,10],"jhirsch@mozilla,com":[6,0,3,1,8,5,15,13,10,14,4,7,12,2,9,11,16],"jparsons@mozilla,com":[2,1,11,4,7,13,8,3,0,6,5,15,10,16,12,14,9],"jrgm@mozilla,com":[6,0,3,7,13,5,2,15,1,10,11,4,8,12,14,9,16],"kparlante@mozilla,com":[0,3,11,14,4,15,16,13,1,2,6,8,7,5,12,9,10],"kthiessen@mozilla,com":[0,8,7,3,15,6,10,2,1,12,4,5,16,11,14,9,13],"lloyd@hilaiel,com":[4,3,5,14,1,15,8,10,0,16,6,9,13,12,11,7,2],"stomlinson@mozilla,com":[0,15,3,6,1,5,10,16,7,11,12,4,8,13,9,2,14]};
+
+    setTimeout(function() {
+/*
     var r2 = firebase.child("responses").child(id);
     r2.on('value', function(sshot) {
       var responses = sshot.val();
+*/
+
       // this can be called multiple times, it's got realtime update.  freaking neat, eh?
       // let's first clear old data -
       $("section.view_survey .faces").empty();
@@ -214,7 +248,8 @@ function renderResponses(id) {
           .appendTo($("section.view_survey .faces"))
           .on('click', function() {
             $(".faces").addClass("limiting");
-            $(this).addClass('include');
+            if ($(this).hasClass('include')) $(this).removeClass('include');
+            else $(this).addClass('include');
             update();
           });
       });
@@ -287,10 +322,11 @@ var router = Router({
     });
   },
   '/view/:surveyId': function(surveyId) {
+/*
     userHasTakenSurvey(surveyId, function(r) {
       if (!r) document.location.hash = "#/take/" + surveyId;
-      else renderResponses(surveyId);
-    });
+      else */ renderResponses(surveyId);
+/*    }); */
   }
 });
 
@@ -316,6 +352,7 @@ router.configure({
   }
 });
 
+/*
 var firebaseAuth = new FirebaseAuthClient(firebase, function(error, user) {
   currentUser = user;
 
@@ -342,3 +379,5 @@ var firebaseAuth = new FirebaseAuthClient(firebase, function(error, user) {
 
   router.init();
 });
+*/
+  router.init();

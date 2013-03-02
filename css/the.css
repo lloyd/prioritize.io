@@ -55,5 +55,16 @@ td.contention_5 {
 img.face  {
     height: 48px;
     width: 48px;
-    border: 0;
+}
+
+img.face:hover {
+    cursor: pointer;
+}
+
+.faces.limiting img {
+    opacity: .5;
+}
+
+.faces.limiting img.include {
+    opacity: 1;
 }

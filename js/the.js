@@ -96,11 +96,11 @@ function renderSurvey(id) {
       $(".take_survey .first").off('click');
       $(".take_survey .second").off('click');
       $(".take_survey .first").text(survey.questions[a]).on('click', function() {
-        EDGES.push([a,b]);
+        EDGES.push([b,a]);
         chosen();
       });
       $(".take_survey .second").text(survey.questions[b]).on('click', function() {
-        EDGES.push([b,a]);
+        EDGES.push([a,b]);
         chosen();
       });
     }

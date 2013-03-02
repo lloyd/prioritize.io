@@ -1,16 +1,16 @@
 (function() {
-  if (!$)
+  if (!$) {
     var $ = { map: function(a, f) { return a.map(f); } };
+  }
+  //+ Jonas Raoni Soares Silva
+  //@ http://jsfromhell.com/array/shuffle [v1.0]
+  function shuffle(o){ //v1.0
+    for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+  };
 
   // http://en.wikipedia.org/wiki/Topological_sorting
   var tsort = function(E, num) {
-    //+ Jonas Raoni Soares Silva
-    //@ http://jsfromhell.com/array/shuffle [v1.0]
-    function shuffle(o){ //v1.0
-      for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-      return o;
-    };
-
     var L = [];
     var S = [];
 
@@ -46,8 +46,51 @@
       E = EN;
     }
 
-    return L;
+    return L.reverse();
   }
+
+  var analysis = function(E, num) {
+    var context = {};
+    for (var i = 0; i < num; i++) {
+      context[i] = {
+        maxPath: 0,
+        deps: 0
+      };
+      for (var j = i+1; j < num; j++) {
+        context[i][j] = false;
+      }
+    }
+
+    function connect(from, to) {
+      var orig = to;
+      if (from > to) {
+        var swp = from;
+        from = to;
+        to = swp;
+      }
+      if (!context[from][to]) context[orig].deps++;
+      context[from][to] = true;
+    }
+
+    function visit(begin, current, depth) {
+      var maxPath = 0;
+      for (var i = 0; i < E.length; i++) {
+        if (E[i][0] != current) continue;
+        connect(begin, E[i][1]);
+        var mp = visit(begin, E[i][1], depth + 1);
+        if (mp > maxPath) maxPath = mp;
+      }
+
+      return maxPath || depth;
+    }
+
+    for (var i = 0; i < num; i++) {
+      context[i].maxPath = visit(i, i, 0);
+    }
+
+    return context;
+  }
+
 
   // returns null if the edges result in a fully unique sorting, otherwise returns a
   // pair of entries that we would like the answer to.
@@ -57,39 +100,37 @@
     // items relevant and seek a total ordering (lots of questions)
     if (!maxRelevant) maxRelevant = 77777;
 
-    var sorted = tsort(E, num);
+    // analyze the graph
+    var analysis = this.analysis(E, num);
 
-    // find the maximum rank an item can have given the current edge set
-    // (useful to determine wether it's relevant and we should ask more
-    // questions about it)
-    function minRank(E, num) {
-      var lengths = $.map(E, function(edge) {
-        if (edge[1] === num) return 1 + minRank(E, edge[0]);
-        else return 0;
-      });
-      return lengths.sort()[lengths.length - 1] || 0;
+    // prune all nodes that are already ranked lower than the relevance water mark.
+    Object.keys(analysis).forEach(function(k) {
+      if (analysis[k].maxPath >= maxRelevant) delete analysis[k];
+    });
+
+    function connected(a, b) {
+      if (a > b) return analysis[b][a];
+      else return analysis[a][b];
     }
 
-    function hasEdge(n, m) {
-      for (var i = 0; i < E.length; i++) {
-        if (E[i][0] == n && E[i][1] == m ||
-            E[i][1] == n && E[i][0] == m) return true;
+    // find a pair of nodes that is not ordered
+
+    var keys = shuffle(Object.keys(analysis).map(function(x) { return Number(x) })).sort(function(a,b) {
+      return ((analysis[a].maxPath > analysis[b].maxPath) ? 1 : -1);
+    });
+
+    for (var i = 0; i < keys.length - 1; i++) {
+      for (var j = i+1; j < keys.length; j++) {
+        if (!connected(keys[i], keys[j])) {
+          return [keys[i], keys[j]];
+        }
       }
-      return false;
     }
-
-    // each consecutive node in the graph should be conected by an edge
-    for (var i = 0; i < sorted.length - 1; i++) {
-      if (!hasEdge(sorted[i], sorted[i+1]) &&
-          minRank(E, sorted[i]) < maxRelevant &&
-          minRank(E, sorted[i + 1]) < maxRelevant)
-        return [sorted[i], sorted[i+1]];
-    }
-
     return null;
   }
 
-  var target = module && module.exports || window ;
+  var target = typeof module === 'object' && module.exports || window ;
   target.nextQuestion = nextQuestion;
   target.tsort = tsort;
+  target.analysis = analysis;
 })();

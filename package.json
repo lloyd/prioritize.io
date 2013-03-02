@@ -1,0 +1,27 @@
+{
+  "name": "prioritize.io",
+  "description": "A website for collaborative prioritization",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+  },
+  "devDependencies": {
+    "should": "1.2.1",
+    "mocha": "1.7.0"
+  },
+  "maintainers": [
+    {
+      "name": "Lloyd Hilaiel",
+      "email": "lloyd@hilaiel.com"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/lloyd/prioritize.io/issues"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "scripts": {
+    "test": "mocha js/test.js"
+  }
+}

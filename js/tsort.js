@@ -92,8 +92,24 @@
   }
 
 
-  // returns null if the edges result in a fully unique sorting, otherwise returns a
-  // pair of entries that we would like the answer to.
+  // Humany description: Given a set of questions and some comparisons from a user,
+  // figure out the best question to ask the user next - the two things she should
+  // compare to get us to an ordered "top five" list from the questions.
+  //
+  // So le'ts represent questions and their relationships with an acyclic directed graph...
+  //
+  // Computery description: Given a set of edges (`E`) in a directed graph consisting of `num` nodes,
+  // where we only care about a total ordering for `maxRelevant` nodes, find a pair of nodes
+  // between which an edge would have the highest probability of getting us to total ordering
+  // of fastest.
+  //
+  // The basic premise of this algorithm is to always ask the users to compare questions
+  // that have no path between them (have not been directly or indirectly compared) and
+  // can be *most* important.
+  //   1. Sort nodes by longest path (which is the maximum possible rank of the node)
+  //   2. Prune nodes with a longest path greater than maxRelevant
+  //   3. find the highest ranked two nodes that are not related and return them, or...
+  //   4. ...if there are none, we're done
   var nextQuestion = function(E, num, maxRelevant) {
     // if a maximum rank that is relevant was not specified, then
     // we'll set maxRelevant to a large number so we consider all
